@@ -11,7 +11,8 @@ class DeliveryRequest(models.Model):
     
     status = models.CharField(
         max_length=20,
-        choices=[('pending', 'Pending'), ('pickedup', 'Pickedup'), ('delivered', 'Delivered')],
+        choices=[ ('accepted', 'Accepted'),('pending', 'Pending'), ('pickedup', 'Pickedup'), ('completed', 'Completed')
+],
         default='pending'
     )
     requested_at = models.DateTimeField(auto_now_add=True)

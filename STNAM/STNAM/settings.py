@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'donor',
     'receiver',
-    'volunteer'
+    'volunteer',
+    'feedback'
 ]
 
 MIDDLEWARE = [

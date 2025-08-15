@@ -51,8 +51,8 @@ class UpdateDeliveryStatusView(generics.UpdateAPIView):
 
     def perform_update(self, serializer):
         instance = serializer.save()
-        if instance.status == 'delivered':
+        if instance.status == 'pickedup':
             donation = instance.donation
-            donation.status = 'delivered'
+            donation.status = 'pickedup'
             donation.save()
 

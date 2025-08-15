@@ -18,6 +18,7 @@ class ReceiverRequest(models.Model):
             ('requested', 'Requested'),
             ('accepted', 'Accepted'),
             ('rejected', 'Rejected'),
+            ('received','Received'),
         ],
         default='requested'
     )

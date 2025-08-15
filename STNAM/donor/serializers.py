@@ -3,6 +3,7 @@ from .models import Donation
 from receiver.models import ReceiverRequest
 
 class DonationSerializer(serializers.ModelSerializer):
+    receiver = serializers.StringRelatedField() 
     class Meta:
         model = Donation
         fields = '__all__'

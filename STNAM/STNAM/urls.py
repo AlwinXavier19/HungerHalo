@@ -23,4 +23,5 @@ urlpatterns = [
     path('api/donor/', include('donor.urls')),
     path('api/receiver/', include('receiver.urls')),
     path('api/volunteer/', include('volunteer.urls')),
+    path('api/feedback/',include('feedback.urls'))
 ]

@@ -14,14 +14,6 @@ class ReceiverRequestCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         serializer.save(receiver=self.request.user)
 
-# class ReceiverRequestListView(generics.ListAPIView):
-#     serializer_class = ReceiverRequestSerializer
-#     permission_classes = [permissions.IsAuthenticated, IsReceiver]
-
-#     def get_queryset(self):
-#         return ReceiverRequest.objects.filter(receiver=self.request.user)
-
-# views.py
 
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -43,11 +35,8 @@ class UpdateReceiverProfile(APIView):
 
         return Response({'message': 'Profile updated'})
 
-# receiver/views.py
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from .models import ReceiverProfile
+
+
 from .serializers import ReceiverProfileSerializer
 
 class ReceiverProfileView(APIView):
@@ -69,3 +58,35 @@ class ReceiverRequestStatusView(APIView):
         serializer = ReceiverRequestSerializer(requests, many=True)
         return Response(serializer.data)
 
+
+from rest_framework import status
+
+from donor.models import Donation  # Import Donation model
+from volunteer.models import DeliveryRequest
+class ConfirmDeliveryView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, request_id):
+        try:
+            receiver_request = ReceiverRequest.objects.get(id=request_id, receiver=request.user)
+        except ReceiverRequest.DoesNotExist:
+            return Response({"error": "Request not found or you are not authorized."}, status=status.HTTP_404_NOT_FOUND)
+
+        # 1️⃣ Update ReceiverRequest status
+        receiver_request.status = 'received'
+        receiver_request.save()
+
+        # 2️⃣ Update related Donation status
+        if receiver_request.donation:
+            receiver_request.donation.status = 'delivered'
+            receiver_request.donation.save()
+
+            # 3️⃣ Update VolunteerDeliveryRequest status if linked
+            volunteer_request = DeliveryRequest.objects.filter(donation=receiver_request.donation).first()
+            if volunteer_request:
+                volunteer_request.status = 'completed'
+                volunteer_request.save()
+
+        return Response({
+            "message": "Status updated: ReceiverRequest -> received, Donation -> delivered, VolunteerDeliveryRequest -> completed"
+        }, status=status.HTTP_200_OK)
